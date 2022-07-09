@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingapp
+  labels:
+    app: pingapp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pingapp
+  template:
+    metadata:
+      labels:
+        app: pingapp
+    spec:
+      containers:
+        - name: telegrambot
+          image: nicopaez/pingapp:2.1.0
+          ports:
+            - containerPort: 4567
+          envFrom:
+            - configMapRef:
+                name: pingapp-configmap
+          volumeMounts:
+            - name: config-volume
+              mountPath: /mydata/config.json
+              subPath: config.json
+            - name: config-secret
+              mountPath: /mysecrets/secret.json
+              subPath: secret.json
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pingapp-configmap2
+        - name: config-secret
+          secret:
+            secretName: pingapp-secret
